@@ -1,3 +1,11 @@
+//Odev:Urunler için(ID,Urun Adi,Fiyat,Kategori) bilgilerini CSV olarak bir dosyada saklayan ve okuyan uygulamayı Windows Forms kullarak yazınız? (Uygulamada INSERT, UPDATE, DELETE , SELECT(Arama)) işlemleri olmalı... UrunID'ye gore arama yapılabilmeli..
+            //*** Ekstra Rapor olarak; kategorisi aynı olan urunler... 
+            //*** Urun sınıfıi ve UrunYonetici sınıfı olsun(CRUD islemleri dosyadan okuma yazma islemleri olsun...)
+
+            //**** Kayıt Silinirken Kullanıcıya sor evet derse sil demezse silme...
+
+//------------------------------------------------------------------------------------------------------------------------
+
 internal class Urun
     {
         private int UrunId { get; set; }
