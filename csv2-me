@@ -1,0 +1,575 @@
+internal class Urun
+    {
+        private int UrunId { get; set; }
+        private string UrunAdi { get; set; }
+        private double UrunFiyati { get; set; }
+        private string UrunKategorisi { get; set; }
+
+
+
+        public Urun(int urunId, string urunAdi, double urunFiyati, string urunKategorisi)
+        { 
+            this.UrunId = urunId;
+            this.UrunAdi = urunAdi;
+            this.UrunFiyati = urunFiyati;
+            this.UrunKategorisi = urunKategorisi;
+        }
+
+
+        public int getUrunId()
+        {
+            return this.UrunId;
+        }
+        public void setUrunId(int urunId)
+        {
+            this.UrunId = urunId;
+        }
+        public string getUrunAdi()
+
+        {
+            return this.UrunAdi;
+        }
+        public void setUrunAdi(string urunAdi)
+        {
+            this.UrunAdi = urunAdi;
+        }
+        public double getUrunFiyati()
+
+        {
+            return this.UrunFiyati;
+        }
+        public void setUrunAdi(double urunFiyati)
+        {
+            this.UrunFiyati = urunFiyati;
+        }
+        public string getUrunKategorisi()
+
+        {
+            return this.UrunKategorisi;
+        }
+        public void setUrunKategorisi(string urunKategorisi)
+        {
+            this.UrunKategorisi = urunKategorisi;
+        }
+    }
+
+//------------------------------------------------------------------------------------------------------------------------
+
+internal class UrunYonetici
+    {
+        DataTable tablo = new DataTable();
+
+        Form1 form1 = new Form1();
+
+        public UrunYonetici() { }
+
+        public UrunYonetici(string eylem)
+        {
+            if (eylem == "kaydet")
+            {
+                this.Kaydet();
+            }
+            else if (eylem == "sil")
+            {
+                this.Sil();
+            }
+            else if (eylem == "listele")
+            {
+                this.Listele();
+            }
+            else if (eylem == "güncelle")
+            {
+                this.Guncelle();
+            }
+            else if (eylem == "temizle")
+            {
+                this.Temizle();
+            }
+            else if (eylem == "form1Load")
+            {
+                this.Form1Load();
+            }
+            else if (eylem == "listeSatirSecimi")
+            {
+                this.ListeSatirSecimi();
+            }
+            else if (eylem == "idyeGoreAra")
+            {
+                this.IdyeGoreAra();
+            }
+        }
+
+
+        public void Kaydet() //alanları doldurun diyor ama dolu
+        {
+            if (form1.txtUrunId.Text != "" && form1.txtUrunAdi.Text != "" && form1.txtUrunFiyati.Text != "" && form1.cmbUrunKategorisi.Text != "")
+            {
+                StreamWriter yaz = File.AppendText("urun3.csv");
+
+                yaz.WriteLine(form1.txtUrunId.Text + ";" + form1.txtUrunAdi.Text + ";" + form1.txtUrunFiyati.Text + ";" + form1.cmbUrunKategorisi.Text);
+
+                yaz.Close();
+
+                MessageBox.Show("Kaydedildi.");
+            }
+            else
+            {
+                MessageBox.Show("Alanları eksiksiz doldurunuz.");
+            }
+        }
+
+
+        public void Guncelle()
+        {
+
+        }
+
+
+        public void Listele() // System.ArgumentException: 'Input array is longer than the number of columns in this table.'
+
+        {
+            tablo.Clear();
+
+            StreamReader oku = new StreamReader("urun3.csv");
+
+            do
+            {
+                string strUrun = oku.ReadLine();
+                string[] dizi = strUrun.Split(';');
+
+                tablo.Rows.Add(dizi);
+
+            } while (!oku.EndOfStream);
+
+            oku.Close();
+
+            form1.grdListe.DataSource = tablo;
+        }
+
+
+        public void Sil()
+        {
+
+        }
+
+        public void Temizle()
+        {
+
+        }
+
+        public void Form1Load() // System.ArgumentException: 'Input array is longer than the number of columns in this table.'
+        {
+            tablo.Columns.Add("URUN ID", typeof(string));
+            tablo.Columns.Add("URUN ADI", typeof(string));
+            tablo.Columns.Add("URUN FIYATI", typeof(string));
+            tablo.Columns.Add("URUN KATEGORİSİ", typeof(string));
+
+            form1.grdListe.DataSource = tablo;
+
+
+            // Buradan aşağısı deneme
+
+            string[] cmbUrunKategorileri = { "Silah", "Gida", "Temizlik", "Kirtasiye" };
+
+            form1.cmbUrunKategorisi.Items.Add("Kişisel Bakim");
+            form1.cmbUrunKategorisi.Items.AddRange(cmbUrunKategorileri);
+            form1.cmbUrunKategorisi.TabIndex = 0;
+
+            string urunKategoriSec = "Seçiniz.";
+
+            form1.cmbUrunKategorisi.SelectedText = urunKategoriSec;
+
+        }
+
+        public void ListeSatirSecimi()
+        {
+
+        }
+
+        public void IdyeGoreAra()
+        {
+
+        }
+
+        public ArrayList UrunClassBaglanti()
+        {
+
+            ArrayList _urunler = new ArrayList();
+            StreamReader oku = new StreamReader("urun3.csv");
+
+            do
+            {
+                string strUrun = oku.ReadLine();
+                string[] dizi = strUrun.Split(';');
+
+                Urun urun = new Urun(int.Parse(dizi[0]), dizi[1], double.Parse(dizi[2]), dizi[3]);
+
+                _urunler.Add(urun);
+
+            } while (!oku.EndOfStream);
+
+
+            oku.Close();
+            return _urunler;
+        }
+    }
+
+//------------------------------------------------------------------------------------------------------------------------
+
+public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        DataTable tablo = new DataTable();
+        DataTable tabloKategori = new DataTable();
+
+
+
+        public void btnKaydet_Click(object sender, EventArgs e) // diğer classtan çağırınca alanlar dolu olmasına rağmen eksiksiz doldurun diyor.
+        {
+            //UrunYonetici uy = new UrunYonetici("kaydet");
+
+            //UrunYonetici uy = new UrunYonetici();
+            //uy.Kaydet();
+
+
+            //string time = Convert.ToString(DateTime.Now);
+            //string[] idDizi = time.Split(':', '.', ' ');
+
+            //foreach (var id in idDizi)
+            //{
+            //    Console.Write(id);
+            //}
+
+            StreamReader oku = new StreamReader("urun3.csv");
+
+            string[] urunlerIdIcin = File.ReadAllLines("urun3.csv");
+
+            oku.Close();
+
+            int id = urunlerIdIcin.Length;
+
+            int sayac = 0;
+
+            for (int i = 1; i < 9999; i++)
+            {
+                sayac = id + 1;
+            }
+
+
+            if (/*txtUrunId.Text != "" && */ txtUrunAdi.Text != "" && txtUrunFiyati.Text != "" && cmbUrunKategorisi.Text != "" /* && txtUrunKategorisi.Text != ""*/)
+            {
+                StreamWriter yaz = File.AppendText("urun3.csv");
+
+                yaz.WriteLine(txtUrunId.Text = sayac + ";" + txtUrunAdi.Text + ";" + txtUrunFiyati.Text + ";" + cmbUrunKategorisi.Text /*+ txtUrunKategorisi.Text*/);
+
+                yaz.Close();
+
+                MessageBox.Show("Kaydedildi.");
+                txtUrunId.Clear();
+            }
+            else
+            {
+                MessageBox.Show("Alanları eksiksiz doldurunuz.");
+            }
+
+        }
+
+        public void btnListele_Click(object sender, EventArgs e) // UrunYonetici class içinde hata açıklaması
+        {
+            //UrunYonetici uy = new UrunYonetici("listele");
+
+            //UrunYonetici uy = new UrunYonetici();
+            //uy.Listele();
+
+            tablo.Clear();
+
+            StreamReader oku = new StreamReader("urun3.csv");
+
+            do
+            {
+                string strUrun = oku.ReadLine();
+                string[] dizi = strUrun.Split(';');
+
+                //int birinci = int.Parse(dizi[0]);
+                //string ikinci = dizi[1];
+                //string ucuncu = dizi[2];
+                //string dorduncu = dizi[3];
+
+                //ArrayList liste = new ArrayList();
+                //liste.Add(birinci);
+                //liste.Add(ikinci);
+                //liste.Add(ucuncu);
+                //liste.Add(dorduncu);
+
+                //liste.Sort(); -------- Id ye göre sıralatmak istedim ama burada hata aldım
+
+                //tablo.Rows.Add(liste);
+
+                /*
+
+                // Sort a string
+                string[] cars = { "Volvo", "BMW", "Ford", "Mazda" };
+                Array.Sort(cars);
+                foreach (string i in cars)
+                {
+                    Console.WriteLine(i);
+                }
+
+                // Sort an int
+                int[] myNumbers = { 5, 1, 8, 9 };
+                Array.Sort(myNumbers);
+                foreach (int i in myNumbers)
+                {
+                    Console.WriteLine(i);
+                }
+
+                */
+
+                tablo.Rows.Add(dizi);
+
+            } while (!oku.EndOfStream);
+
+            oku.Close();
+
+            grdListe.DataSource = tablo;
+
+            grdListe.Sort(grdListe.Columns["URUN ID"], ListSortDirection.Ascending);
+
+        }
+
+        public void Form1_Load(object sender, EventArgs e) // UrunYonetici class içinde hata açıklaması
+        {
+            //UrunYonetici uy = new UrunYonetici("form1Load");
+
+            //UrunYonetici uy = new UrunYonetici();
+            //uy.Form1Load();
+
+            tablo.Columns.Add("URUN ID", typeof(int));
+            tablo.Columns.Add("URUN ADI", typeof(string));
+            tablo.Columns.Add("URUN FIYATI", typeof(string));
+            tablo.Columns.Add("URUN KATEGORİSİ", typeof(string));
+
+            grdListe.DataSource = tablo;
+
+
+            tabloKategori.Columns.Add("URUN ID", typeof(int));
+            tabloKategori.Columns.Add("URUN ADI", typeof(string));
+            tabloKategori.Columns.Add("URUN FIYATI", typeof(string));
+            tabloKategori.Columns.Add("URUN KATEGORİSİ", typeof(string));
+
+            grdListe.DataSource = tabloKategori;
+
+
+
+
+            string[] cmbUrunKategorileri = { "silah", "gida", "temizlik", "kirtasiye" };
+
+            cmbUrunKategorisi.Items.Add("kişisel bakim");
+            cmbUrunKategorisi.Items.AddRange(cmbUrunKategorileri);
+            cmbUrunKategorisi.TabIndex = 0;
+
+            string urunKategoriSec = "Seçiniz.";
+
+            cmbUrunKategorisi.SelectedText = urunKategoriSec;
+        }
+
+        public void btnGuncelle_Click(object sender, EventArgs e)
+        {
+            //UrunYonetici uy = new UrunYonetici("guncelle");
+            //UrunYonetici uy = new UrunYonetici();
+            //uy.Guncelle();
+
+            btnKaydet.Enabled = false;
+            txtUrunId.Enabled = false;
+
+            if (grdListe.SelectedRows.Count != 0)
+            {
+                string[] urunler = File.ReadAllLines("urun3.csv");
+
+                File.Delete("urun3.csv");
+
+                StreamWriter yaz = File.AppendText("urun3.csv");
+
+                for (int i = 0; i < urunler.Length; i++)
+                {
+                    if (urunler[i].Split(';')[0].ToString() == grdListe.CurrentRow.Cells[0].Value.ToString())
+                    {
+                        yaz.WriteLine(txtUrunId.Text + ";" + txtUrunAdi.Text + ";" + txtUrunFiyati.Text + ";" + cmbUrunKategorisi.Text/*+ txtUrunKategorisi.Text*/);
+                    }
+                    else
+                    {
+                        yaz.WriteLine(urunler[i]);
+                    }
+                }
+
+                yaz.Close();
+
+                MessageBox.Show("Güncellendi.");
+            }
+            else
+            {
+                MessageBox.Show("Güncellenecek satırı seçiniz.");
+            }
+        }
+
+        public void btnSil_Click(object sender, EventArgs e)
+        {
+            //UrunYonetici uy = new UrunYonetici("sil");
+            //UrunYonetici uy = new UrunYonetici();
+            //uy.Sil();
+
+            if (grdListe.SelectedRows.Count != 0)
+            {
+                DialogResult dialogResult = MessageBox.Show("Emin misiniz?", "Uyarı", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+                if (dialogResult == DialogResult.Yes)
+                {
+                    string[] urunler = File.ReadAllLines("urun3.csv");
+
+                    File.Delete("urun3.csv");
+
+                    StreamWriter yaz = File.AppendText("urun3.csv");
+
+                    for (int i = 0; i < urunler.Length; i++)
+                    {
+                        if (urunler[i].Split(';')[0].ToString() != grdListe.CurrentRow.Cells[0].Value.ToString())
+                        {
+                            yaz.WriteLine(urunler[i]);
+                        }
+                    }
+
+                    yaz.Close();
+
+                    MessageBox.Show("Silindi.");
+
+                }
+                else if (dialogResult == DialogResult.No)
+
+                    MessageBox.Show("Değişiklik yapılmadı.");
+            }
+            else
+            {
+                MessageBox.Show("Silinecek satırı seçiniz.");
+            }
+        }
+
+        public void btnTemizle_Click(object sender, EventArgs e)
+        {
+            //UrunYonetici uy = new UrunYonetici("temizle");
+            //UrunYonetici uy = new UrunYonetici();
+            //uy.Temizle();
+
+            txtUrunId.Clear();
+            txtUrunAdi.Clear();
+            txtUrunFiyati.Clear();
+            cmbUrunKategorisi.Text = "Seçiniz.";
+            //txtUrunKategorisi.Clear();
+
+            btnKaydet.Enabled = true;
+            btnGuncelle.Enabled = false;
+            txtUrunId.Enabled = true;
+        }
+
+        public void btnIdAra_Click(object sender, EventArgs e)
+        {
+            //UrunYonetici uy = new UrunYonetici("idyeGoreAra");
+            //UrunYonetici uy = new UrunYonetici();
+            //uy.IdyeGoreAra();
+
+            tablo.Clear();
+
+            StreamReader oku = new StreamReader("urun3.csv");
+
+            string[] urunler = File.ReadAllLines("urun3.csv");
+
+            for (int i = 0; i < urunler.Length; i++)
+            {
+                if (urunler[i].Split(';')[0].ToString() == txtUrunId.Text)
+                {
+                    tablo.Rows.Add(urunler[i].Split(';'));
+                    break;
+                }
+                else
+                {
+                    grdListe.DataSource = null;
+                }
+
+                oku.Close();
+
+                grdListe.DataSource = tablo;
+            }
+        }
+
+        public void grdListe_Click(object sender, EventArgs e)
+        {
+            //UrunYonetici uy = new UrunYonetici("listeSatirSecimi");
+            //UrunYonetici uy = new UrunYonetici();
+            //uy.ListeSatirSecimi();
+
+            if (grdListe.SelectedRows.Count != 0)
+            {
+
+                txtUrunId.Text = grdListe.CurrentRow.Cells[0].Value.ToString();
+                txtUrunAdi.Text = grdListe.CurrentRow.Cells[1].Value.ToString();
+                txtUrunFiyati.Text = grdListe.CurrentRow.Cells[2].Value.ToString();
+                cmbUrunKategorisi.Text = grdListe.CurrentRow.Cells[3].Value.ToString();
+                //txtUrunKategorisi.Text = grdListe.CurrentRow.Cells[3].Value.ToString();
+
+                txtUrunId.Enabled = false;
+                btnKaydet.Enabled = false;
+            }
+            else
+            {
+                txtUrunId.Text = "";
+                txtUrunAdi.Text = "";
+                txtUrunFiyati.Text = "";
+                cmbUrunKategorisi.Text = "";
+                //txtUrunKategorisi.Text = "";
+
+                txtUrunId.Enabled = true;
+            }
+        }
+
+        public void btnKategoriRapor_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        public void grdListe_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void btnKategoriAra_Click(object sender, EventArgs e)
+        {
+            //Form2 form2 = new Form2();
+
+            //form2.Show();
+
+            tabloKategori.Clear();
+
+            StreamReader oku = new StreamReader("urun3.csv");
+
+            string[] urunler = File.ReadAllLines("urun3.csv");
+
+            for (int i = 0; i < urunler.Length; i++)
+            {
+                if (urunler[i].Split(';')[3].ToString() == cmbUrunKategorisi.Text)
+                {
+                    tabloKategori.Rows.Add(urunler[i].Split(';'));
+                }
+                else
+                {
+                    grdListe.DataSource = null;
+                }
+
+                oku.Close();
+
+                grdListeKategori.DataSource = tabloKategori;
+            }
+        }
+    }
